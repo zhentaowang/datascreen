@@ -3,7 +3,7 @@
 src/test/
 target/
 #logs/
-#.idea/
+.idea/
 api/
 *.iml
 *.vscode/
