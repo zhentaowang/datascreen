@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.adatafun</groupId>
-    <artifactId>lg-datascreen</artifactId>
+    <artifactId>lj-datascreen</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
-    <name>lg-datascreen</name>
+    <name>lj-datascreen</name>
     <url>http://maven.apache.org</url>
 
     <properties>
