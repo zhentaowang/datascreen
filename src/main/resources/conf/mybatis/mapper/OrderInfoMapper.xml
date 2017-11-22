@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.adatafun.datascreen.mapper.OrderInfoMapper">
+  <resultMap id="BaseResultMap" type="com.adatafun.datascreen.model.OrderInfo">
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="flight_id" jdbcType="BIGINT" property="flightId" />
+    <result column="customer_id" jdbcType="BIGINT" property="customerId" />
+    <result column="customer_name" jdbcType="VARCHAR" property="customerName" />
+    <result column="protocol_id" jdbcType="BIGINT" property="protocolId" />
+    <result column="protocol_name" jdbcType="VARCHAR" property="protocolName" />
+    <result column="protocol_type" jdbcType="BIGINT" property="protocolType" />
+    <result column="booking_person" jdbcType="BIGINT" property="bookingPerson" />
+    <result column="booking_person_name" jdbcType="VARCHAR" property="bookingPersonName" />
+    <result column="notice_person" jdbcType="VARCHAR" property="noticePerson" />
+    <result column="booking_way" jdbcType="SMALLINT" property="bookingWay" />
+    <result column="is_important" jdbcType="SMALLINT" property="isImportant" />
+    <result column="product_id" jdbcType="BIGINT" property="productId" />
+    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="print_check" jdbcType="SMALLINT" property="printCheck" />
+    <result column="print_check_remark" jdbcType="VARCHAR" property="printCheckRemark" />
+    <result column="consign" jdbcType="SMALLINT" property="consign" />
+    <result column="consign_remark" jdbcType="VARCHAR" property="consignRemark" />
+    <result column="other_remark" jdbcType="VARCHAR" property="otherRemark" />
+    <result column="order_status" jdbcType="VARCHAR" property="orderStatus" />
+    <result column="order_type" jdbcType="SMALLINT" property="orderType" />
+    <result column="agent_complete" jdbcType="SMALLINT" property="agentComplete" />
+    <result column="agent_person" jdbcType="BIGINT" property="agentPerson" />
+    <result column="agent_person_name" jdbcType="VARCHAR" property="agentPersonName" />
+    <result column="server_card_no" jdbcType="VARCHAR" property="serverCardNo" />
+    <result column="vip_card" jdbcType="VARCHAR" property="vipCard" />
+    <result column="cash" jdbcType="DECIMAL" property="cash" />
+    <result column="sit_no" jdbcType="VARCHAR" property="sitNo" />
+    <result column="server_location" jdbcType="VARCHAR" property="serverLocation" />
+    <result column="server_complete" jdbcType="SMALLINT" property="serverComplete" />
+    <result column="server_complete_time" jdbcType="TIMESTAMP" property="serverCompleteTime" />
+    <result column="server_complete_id" jdbcType="BIGINT" property="serverCompleteId" />
+    <result column="server_complete_name" jdbcType="VARCHAR" property="serverCompleteName" />
+    <result column="server_person_num" jdbcType="INTEGER" property="serverPersonNum" />
+    <result column="along_total" jdbcType="INTEGER" property="alongTotal" />
+    <result column="is_deleted" jdbcType="SMALLINT" property="isDeleted" />
+    <result column="airport_code" jdbcType="VARCHAR" property="airportCode" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_user" jdbcType="BIGINT" property="createUser" />
+    <result column="create_user_name" jdbcType="VARCHAR" property="createUserName" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="update_user" jdbcType="BIGINT" property="updateUser" />
+    <result column="server_create_time" jdbcType="TIMESTAMP" property="serverCreateTime" />
+    <result column="server_create_user_id" jdbcType="BIGINT" property="serverCreateUserId" />
+    <result column="server_create_user_name" jdbcType="VARCHAR" property="serverCreateUserName" />
+    <result column="server_update_time" jdbcType="TIMESTAMP" property="serverUpdateTime" />
+    <result column="server_update_user_id" jdbcType="BIGINT" property="serverUpdateUserId" />
+    <result column="server_update_user_name" jdbcType="VARCHAR" property="serverUpdateUserName" />
+    <result column="create_role" jdbcType="VARCHAR" property="createRole" />
+    <result column="security_check" jdbcType="SMALLINT" property="securityCheck" />
+    <result column="security_check_remark" jdbcType="VARCHAR" property="securityCheckRemark" />
+    <result column="numbers" jdbcType="BIGINT" property="numbers" />
+    <result column="flight_dep" jdbcType="VARCHAR" property="flightDep" />
+    <result column="flight_arr" jdbcType="VARCHAR" property="flightArr" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="latitude" jdbcType="VARCHAR" property="latitude" />
+    <result column="longitude" jdbcType="VARCHAR" property="longitude" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+  </resultMap>
+  <sql id="SourceChan_Column_List">
+    customer_name
+  </sql>
+  <select id="getSourceChanByDate" parameterType="map" resultType="map">
+    select customer_name, count(1) AS numbers from order_info
+    where is_important = 1 AND order_status = '已使用'
+    AND (server_complete_time BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
+    GROUP BY customer_name ORDER BY numbers DESC
+  </select>
+  <select id="getGuestArrByDate" parameterType="map" resultType="map">
+    select f.flight_arr, ai.name, ai.latitude, ai.longitude, count(1) AS numbers
+    from order_info oi
+    left join flight f on oi.flight_id = f.flight_id
+    left join airport_info ai on f.flight_arr_airport = ai.name
+    where f.flight_dep='丽江市'
+    group by f.flight_arr, ai.name, ai.latitude, ai.longitude ORDER BY numbers DESC
+  </select>
+  <select id="getGuestDepByDate" parameterType="map" resultType="map">
+    select f.flight_dep, ai.name, ai.latitude, ai.longitude, count(1) AS numbers
+    from order_info oi
+    left join flight f on oi.flight_id = f.flight_id
+    left join airport_info ai on f.flight_dep_airport = ai.name
+    where f.flight_arr='丽江市'
+    group by f.flight_dep, ai.name, ai.latitude, ai.longitude ORDER BY numbers DESC
+  </select>
+  <select id="getGuestByDate" parameterType="map" resultType="map">
+    select ai.city, count(1) AS numbers
+    from order_info oi
+    left join flight f on oi.flight_id = f.flight_id
+    left join airport_info ai  on
+    ai.airport_code = f.flight_depcode or ai.airport_code = f.flight_arrcode
+    group by ai.city ORDER BY numbers DESC
+  </select>
+</mapper>
