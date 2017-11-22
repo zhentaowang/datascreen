@@ -25,6 +25,7 @@
 package com.adatafun.datascreen.thrift;
 
 import com.adatafun.datascreen.controller.PermissionController;
+import com.adatafun.datascreen.controller.OrderInfoController;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.wyun.thrift.server.business.IBusinessService;
@@ -41,10 +42,14 @@ import org.springframework.stereotype.Service;
 public class BusinessService implements IBusinessService {
 
     private final PermissionController permissionController;
+//    旅客分布 重要客户来源渠道
+    private final OrderInfoController orderInfoController;
 
     @Autowired
-    public BusinessService(PermissionController permissionController) {
+    public BusinessService(PermissionController permissionController,
+                           OrderInfoController orderInfoController) {
         this.permissionController = permissionController;
+        this.orderInfoController = orderInfoController;
     }
 
     @Override
@@ -54,10 +59,24 @@ public class BusinessService implements IBusinessService {
         switch (operation) {
             case "view":
                 success = permissionController.view(request);
+                break;
+            case "queryGuestArr":
+            case "queryGuestDep":
+            case "queryGuest":
+                success = orderInfoController.getGuestDistribution(operation, request);
+                System.out.println("queryGuestArr");
+                break;
+            case "queryRestaurant":
+                success = orderInfoController.getGuestDistribution(operation, request);
+                System.out.println("queryRestaurant");
+                break;
+            case "querySourceChannel":
+                success = orderInfoController.getSourceChannel(request);
+                System.out.println("querySourceChannel");
+                break;
             default:
                 break;
         }
         return JSON.parseObject(success);
     }
-
 }
