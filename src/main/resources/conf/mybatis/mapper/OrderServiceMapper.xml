@@ -13,9 +13,7 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="update_user" jdbcType="BIGINT" property="updateUser" />
   </resultMap>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select *
-    from order_service
-    where order_service_id = #{orderServiceId,jdbcType=BIGINT}
+  <select id="getServiceDetail" parameterType="map" resultType="map">
+    select service_detail from order_service WHERE is_deleted = 0 AND service_detail IS NOT NULL
   </select>
 </mapper>

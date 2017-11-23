@@ -24,6 +24,7 @@
 
 package com.adatafun.datascreen.thrift;
 
+import com.adatafun.datascreen.controller.OrderServiceController;
 import com.adatafun.datascreen.controller.PermissionController;
 import com.adatafun.datascreen.controller.OrderInfoController;
 import com.alibaba.fastjson.JSON;
@@ -44,12 +45,16 @@ public class BusinessService implements IBusinessService {
     private final PermissionController permissionController;
 //    旅客分布 重要客户来源渠道
     private final OrderInfoController orderInfoController;
+//    丽江机场热门休息室/贵宾厅
+    private final OrderServiceController orderServiceController;
 
     @Autowired
     public BusinessService(PermissionController permissionController,
-                           OrderInfoController orderInfoController) {
+                           OrderInfoController orderInfoController,
+                           OrderServiceController orderServiceController) {
         this.permissionController = permissionController;
         this.orderInfoController = orderInfoController;
+        this.orderServiceController = orderServiceController;
     }
 
     @Override
@@ -67,12 +72,16 @@ public class BusinessService implements IBusinessService {
                 System.out.println("queryGuestArr");
                 break;
             case "queryRestaurant":
-                success = orderInfoController.getGuestDistribution(operation, request);
-                System.out.println("queryRestaurant");
+                success = orderServiceController.getServiceDetail(request);
+                System.out.println("测试数据乱码");
                 break;
             case "querySourceChannel":
                 success = orderInfoController.getSourceChannel(request);
                 System.out.println("querySourceChannel");
+                break;
+            case "queryServiceDetail":
+                success = orderServiceController.getServiceDetail(request);
+                System.out.println("queryServiceDetail");
                 break;
             default:
                 break;
