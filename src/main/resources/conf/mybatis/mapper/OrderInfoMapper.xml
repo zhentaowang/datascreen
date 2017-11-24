@@ -86,12 +86,12 @@
     group by ai.city, ai.name, ai.latitude, ai.longitude ORDER BY count(1) DESC
   </select>
   <select id="getGuestByDate" parameterType="map" resultType="map">
-    select ai.city, count(1) AS numbers
+    select ai.city, ai.name, ai.latitude, ai.longitude, count(1) AS numbers
     from order_info oi
     left join flight f on oi.flight_id = f.flight_id
     left join airport_info ai  on
     ai.airport_code = f.flight_depcode or ai.airport_code = f.flight_arrcode
     WHERE (oi.server_complete_time BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
-    group by ai.city ORDER BY count(1) DESC
+    group by ai.city, ai.name, ai.latitude, ai.longitude  ORDER BY count(1) DESC
   </select>
 </mapper>
