@@ -23,6 +23,6 @@
   </sql>
 
   <select id="selectById" parameterType="map" resultMap="BaseResultMap">
-    SELECT permission_id, airport_code, url, name FROM permission where permission_id = #{permissionId,jdbcType=BIGINT} and is_deleted = 0
+    SELECT permission_id, airport_code, url, name, permission_type FROM permission where permission_id = #{permissionId,jdbcType=BIGINT} and is_deleted = 0
   </select>
 </mapper>

@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.adatafun.datascreen.model.OrderService">
     <id column="order_service_id" jdbcType="BIGINT" property="orderServiceId" />
     <result column="order_id" jdbcType="BIGINT" property="orderId" />
-    <result column="service_detail" jdbcType="CHAR" property="serviceDetail" />
+    <result column="service_detail" jdbcType="VARCHAR" property="serviceDetail" />
     <result column="price_rule" jdbcType="CHAR" property="priceRule" />
     <result column="is_deleted" jdbcType="SMALLINT" property="isDeleted" />
     <result column="airport_code" jdbcType="VARCHAR" property="airportCode" />
@@ -12,8 +12,22 @@
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="update_user" jdbcType="BIGINT" property="updateUser" />
+    <result column="servId" jdbcType="BIGINT" property="servId" />
+    <result column="serverNum" jdbcType="BIGINT" property="serverNum" />
+    <result column="serviceId" jdbcType="BIGINT" property="serviceId" />
+    <result column="serviceName" jdbcType="VARCHAR" property="serviceName" />
+    <result column="serviceDetailId" jdbcType="BIGINT" property="serviceDetailId" />
+    <result column="serviceDetailName" jdbcType="VARCHAR" property="serviceDetailName" />
   </resultMap>
   <select id="getServiceDetail" parameterType="map" resultType="map">
-    select service_detail from order_service WHERE is_deleted = 0 AND service_detail IS NOT NULL
+  SELECT os.service_detail->'$.serviceDetailName' AS serviceDetailName,
+  sum(os.service_detail->'$.serverNum') AS serverNum FROM order_service os
+  LEFT JOIN order_info oi ON oi.order_id = os.order_id
+  WHERE (os.service_detail->'$.serviceDetailName' is not null and os.service_detail->'$.serviceDetailName' != '')
+  AND (os.service_detail->'$.serverNum' is not NULL and os.service_detail->'$.serverNum' != '')
+  AND  os.is_deleted = 0
+  AND (oi.server_complete_time BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
+  group by os.service_detail->'$.serviceDetailName'
+  ORDER BY sum(os.service_detail->'$.serverNum') DESC
   </select>
 </mapper>

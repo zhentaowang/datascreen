@@ -5,7 +5,7 @@
 "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd"
 >
 <generatorConfiguration>
-	<classPathEntry location="/Users/m2shad0w/.m2/repository/mysql/mysql-connector-java/5.1.44/mysql-connector-java-5.1.44.jar" />
+	<classPathEntry location="/Users/m2shad0w/.m2/repository/mysql/mysql-connector-java/5.1.38/mysql-connector-java-5.1.38.jar" />
 	<!-- 配置数据源和生成的代码所存放的位置 -->
 	<context id="context1">
 	 	<!-- 生成的Java文件的编码 -->  
@@ -18,7 +18,7 @@
             <property name="suppressAllComments" value="false" />
         </commentGenerator>-->
 		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
-			connectionURL="jdbc:mysql://120.27.217.130:3306/wyun_guest" userId="airport"
+			connectionURL="jdbc:mysql://120.27.217.130/wyun_guest?characterEncoding=utf-8&amp;useUnicode=true" userId="airport"
 			password="fs12345" />
 		<!-- 所生成的实体类的位置默认资源包src -->
 		<javaModelGenerator targetPackage="com.adatafun.datascreen.model" targetProject="src/main/java" />
@@ -39,7 +39,7 @@
 			<!--&lt;!&ndash;<ignoreColumn column="create_user"/>&ndash;&gt;-->
 			<!--&lt;!&ndash;<ignoreColumn column="update_user"/>&ndash;&gt;-->
 		<!--</table>-->
-		<table schema="" tableName="order_service" enableCountByExample="false"
+		<table schema="" tableName="flight" enableCountByExample="false"
 			   enableUpdateByExample="false" enableDeleteByExample="false"
 			   enableSelectByExample="false" selectByExampleQueryId="false">
 			<!--<ignoreColumn column="update_time"/>-->

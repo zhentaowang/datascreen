@@ -65,23 +65,16 @@ public class BusinessService implements IBusinessService {
             case "view":
                 success = permissionController.view(request);
                 break;
-            case "queryGuestArr":
+            case "queryGuestArr":  //目的地旅客分布 出发地旅客分布 旅客分布
             case "queryGuestDep":
             case "queryGuest":
                 success = orderInfoController.getGuestDistribution(operation, request);
-                System.out.println("queryGuestArr");
                 break;
-            case "queryRestaurant":
-                success = orderServiceController.getServiceDetail(request);
-                System.out.println("测试数据乱码");
-                break;
-            case "querySourceChannel":
+            case "querySourceChannel": //来源渠道分布
                 success = orderInfoController.getSourceChannel(request);
-                System.out.println("querySourceChannel");
                 break;
-            case "queryServiceDetail":
+            case "queryServiceDetail": //休息室/贵宾厅使用情况
                 success = orderServiceController.getServiceDetail(request);
-                System.out.println("queryServiceDetail");
                 break;
             default:
                 break;

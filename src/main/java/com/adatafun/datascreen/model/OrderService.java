@@ -2,7 +2,7 @@
  * OrderService.java
  * Copyright(C) 2016 杭州量子金融信息服务有限公司
  * https://www.zhiweicloud.com
- * 2017-11-22 20:12:47 Created By null
+ * 2017-11-23 15:57:46 Created By null
 */
 package com.adatafun.datascreen.model;
 
@@ -17,7 +17,7 @@ import org.hibernate.validator.constraints.NotEmpty;
  * OrderService.java
  * Copyright(C) 2016 杭州量子金融信息服务有限公司
  * https://www.zhiweicloud.com
- * 2017-11-22 20:12:47 Created By husai
+ * 2017-11-23 15:57:46 Created By null
 */
 @ApiModel(value="OrderService",description="order_service")
 public class OrderService {

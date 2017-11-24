@@ -179,9 +179,6 @@ public class OrderInfo {
     @ApiModelProperty(value="安检礼遇备注",name="securityCheckRemark")
     private String securityCheckRemark;
 
-    @ApiModelProperty(value="渠道人数",name="numbers")
-    private long numbers;
-
     /**
      * 主键自增id
      * @return order_id 主键自增id
@@ -997,22 +994,4 @@ public class OrderInfo {
     public void setSecurityCheckRemark(String securityCheckRemark) {
         this.securityCheckRemark = securityCheckRemark;
     }
-
-    /**
-     * 服务订单创建人id
-     * @return numbers 服务订单创建人id
-     */
-    public Long getnumbers() {
-        return numbers;
-    }
-
-    /**
-     * 服务订单创建人id
-     * @param numbers 服务订单创建人id
-     */
-    public void setnumbers(Long numbers) {
-        this.numbers = numbers;
-    }
-
-
 }

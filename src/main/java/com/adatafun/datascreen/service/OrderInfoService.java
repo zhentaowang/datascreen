@@ -1,7 +1,6 @@
 package com.adatafun.datascreen.service;
 
 import com.adatafun.datascreen.mapper.OrderInfoMapper;
-import com.adatafun.datascreen.model.OrderInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
