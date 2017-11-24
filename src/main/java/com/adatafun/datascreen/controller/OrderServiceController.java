@@ -1,7 +1,6 @@
 package com.adatafun.datascreen.controller;
 
 import com.adatafun.datascreen.service.OrderServiceService;
-import com.adatafun.datascreen.utils.DataProcessing;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zhiweicloud.guest.APIUtil.LXResult;
@@ -39,11 +38,7 @@ public class OrderServiceController {
             param.put("startDate", request.getString("startDate"));
             param.put("endDate", request.getString("endDate"));
             List<Map<String, Object>> serviceDetailList = orderServiceService.getServiceDetail(param);
-
-//            读取到数据库的 json 乱码，强制转成 utf-8
-            DataProcessing dataProcessing = new DataProcessing();
-            List<Map<String, Object>> productList = dataProcessing.serviceDetailCal(serviceDetailList);
-            return JSON.toJSONString(new LZResult<>(productList));
+            return JSON.toJSONString(new LZResult<>(serviceDetailList));
         } catch (Exception e) {
             e.printStackTrace();
             return JSON.toJSONString(LXResult.build(LZStatus.ERROR.value(), LZStatus.ERROR.display()));

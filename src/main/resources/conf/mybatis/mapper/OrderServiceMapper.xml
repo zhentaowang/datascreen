@@ -20,14 +20,14 @@
     <result column="serviceDetailName" jdbcType="VARCHAR" property="serviceDetailName" />
   </resultMap>
   <select id="getServiceDetail" parameterType="map" resultType="map">
-  SELECT os.service_detail->'$.serviceDetailName' AS serviceDetailName,
+  SELECT os.service_detail->>'$.serviceDetailName' AS serviceDetailName,
   sum(os.service_detail->'$.serverNum') AS serverNum FROM order_service os
   LEFT JOIN order_info oi ON oi.order_id = os.order_id
-  WHERE (os.service_detail->'$.serviceDetailName' is not null and os.service_detail->'$.serviceDetailName' != '')
+  WHERE (os.service_detail->>'$.serviceDetailName' is not null and os.service_detail->>'$.serviceDetailName' != '')
   AND (os.service_detail->'$.serverNum' is not NULL and os.service_detail->'$.serverNum' != '')
   AND  os.is_deleted = 0
   AND (oi.server_complete_time BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
-  group by os.service_detail->'$.serviceDetailName'
+  group by os.service_detail->>'$.serviceDetailName'
   ORDER BY sum(os.service_detail->'$.serverNum') DESC
   </select>
 </mapper>
