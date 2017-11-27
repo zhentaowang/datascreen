@@ -68,30 +68,40 @@
     GROUP BY customer_name ORDER BY count(1) DESC
   </select>
   <select id="getGuestArrByDate" parameterType="map" resultType="map">
-    select ai.city, ai.name, ai.latitude, ai.longitude, count(1) AS numbers
-    from order_info oi
-    left join flight f on oi.flight_id = f.flight_id
-    left join airport_info ai on ai.airport_code = f.flight_arrcode
-    where f.flight_depcode='LJG' and ai.city is not null
+    select ai.city, ai.name, ai.latitude, ai.longitude, a.numbers from
+    (select  f.flight_arrcode, count(1) AS numbers  from order_info oi left join flight f on oi.flight_id = f.flight_id
+    where f.flight_depcode='LJG'
     and (oi.server_complete_time BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
-    group by ai.city, ai.name, ai.latitude, ai.longitude ORDER BY count(1) DESC
+    group by  f.flight_arrcode) a
+    left join airport_info ai on a.flight_arrcode = ai.airport_code
+    where ai.city is not null ORDER BY a.numbers DESC
   </select>
-  <select id="getGuestDepByDate" parameterType="map" resultType="map">
-    select ai.city, ai.name, ai.latitude, ai.longitude, count(1) AS numbers
-    from order_info oi
-    left join flight f on oi.flight_id = f.flight_id
-    left join airport_info ai on ai.airport_code = f.flight_depcode
-    where f.flight_arrcode='LJG' and ai.city is not null
+  <select id="getGuestDepByDate_before" parameterType="map" resultType="map">
+     select ai.city, ai.name, ai.latitude, ai.longitude, a.numbers from
+    (select  f.flight_depcode, count(1) AS numbers  from order_info oi left join flight f on oi.flight_id = f.flight_id
+    where f.flight_arrcode='LJG'
     and (oi.server_complete_time BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
-    group by ai.city, ai.name, ai.latitude, ai.longitude ORDER BY count(1) DESC
+    group by  f.flight_depcode) a
+    left join airport_info ai on a.flight_depcode = ai.airport_code
+    where ai.city is not null ORDER BY a.numbers DESC
   </select>
   <select id="getGuestByDate" parameterType="map" resultType="map">
-    select ai.city, ai.name, ai.latitude, ai.longitude, count(1) AS numbers
-    from order_info oi
+    select ai.city, ai.name, ai.latitude, ai.longitude, fff.numbers from
+    (
+    select ff.fc, sum(ff.c) numbers  from
+    (select f.flight_depcode fc, count(1) c from order_info oi
     left join flight f on oi.flight_id = f.flight_id
+    where (oi.server_complete_time BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
+    group by f.flight_depcode+f.flight_arrcode
+    union all
+    select f.flight_arrcode fc, count(1) c from order_info oi
+    left join flight f on oi.flight_id = f.flight_id
+    where (oi.server_complete_time BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
+    group by f.flight_arrcode)
+    ff group by ff.fc
+   ) fff
     left join airport_info ai  on
-    ai.airport_code = f.flight_depcode or ai.airport_code = f.flight_arrcode
-    WHERE (oi.server_complete_time BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
-    group by ai.city, ai.name, ai.latitude, ai.longitude  ORDER BY count(1) DESC
+    ai.airport_code = fff.fc
+    where ai.city is not null ORDER BY fff.numbers DESC
   </select>
 </mapper>
