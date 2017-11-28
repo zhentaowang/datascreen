@@ -1,9 +1,5 @@
 package com.adatafun.datascreen.mapper;
 
-import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import java.util.List;
 import java.util.Map;
 

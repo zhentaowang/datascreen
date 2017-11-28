@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.adatafun.datascreen.mapper.LoginMapper">
+  <resultMap id="BaseResultMap" type="com.adatafun.datascreen.model.Login">
+    <id column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="userpwd" jdbcType="VARCHAR" property="userpwd" />
+  </resultMap>
+  <select id="getLogin" parameterType="map" resultMap="BaseResultMap">
+    SELECT * FROM login WHERE username = #{username, jdbcType=VARCHAR}
+  </select>
+</mapper>

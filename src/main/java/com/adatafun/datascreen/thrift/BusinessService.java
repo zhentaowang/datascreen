@@ -24,6 +24,7 @@
 
 package com.adatafun.datascreen.thrift;
 
+import com.adatafun.datascreen.controller.LoginController;
 import com.adatafun.datascreen.controller.OrderServiceController;
 import com.adatafun.datascreen.controller.PermissionController;
 import com.adatafun.datascreen.controller.OrderInfoController;
@@ -47,14 +48,18 @@ public class BusinessService implements IBusinessService {
     private final OrderInfoController orderInfoController;
 //    丽江机场热门休息室/贵宾厅
     private final OrderServiceController orderServiceController;
+//    用户登录 验证
+    private final LoginController loginController;
 
     @Autowired
     public BusinessService(PermissionController permissionController,
                            OrderInfoController orderInfoController,
-                           OrderServiceController orderServiceController) {
+                           OrderServiceController orderServiceController,
+                           LoginController loginController) {
         this.permissionController = permissionController;
         this.orderInfoController = orderInfoController;
         this.orderServiceController = orderServiceController;
+        this.loginController = loginController;
     }
 
     @Override
@@ -75,6 +80,9 @@ public class BusinessService implements IBusinessService {
                 break;
             case "queryServiceDetail": //休息室/贵宾厅使用情况
                 success = orderServiceController.getServiceDetail(request);
+                break;
+            case "queryLogin": //用户登录
+                success = loginController.getLoginDetail(request);
                 break;
             default:
                 break;
