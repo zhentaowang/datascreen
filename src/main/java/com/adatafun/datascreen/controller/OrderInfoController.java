@@ -1,5 +1,6 @@
 package com.adatafun.datascreen.controller;
 
+import com.adatafun.datascreen.service.ElasticSearchService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zhiweicloud.guest.APIUtil.LXResult;
@@ -22,10 +23,13 @@ import java.util.Map;
 public class OrderInfoController {
 
     private final OrderInfoService orderInfoService;
+    private final ElasticSearchService elasticSearchService;
 
     @Autowired
-    public OrderInfoController(OrderInfoService orderInfoService) {
+    public OrderInfoController(OrderInfoService orderInfoService,
+                               ElasticSearchService elasticSearchService) {
         this.orderInfoService = orderInfoService;
+        this.elasticSearchService = elasticSearchService;
     }
 //
     /**
@@ -77,4 +81,17 @@ public class OrderInfoController {
             return JSON.toJSONString(LXResult.build(LZStatus.ERROR.value(), LZStatus.ERROR.display()));
         }
     }
+
+    /**
+     * 用户总数 从ES中取
+     * @param request
+     * @return  用户总数
+     */
+    public String getOrderTotal(JSONObject request) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("indexName", "lj-user");
+        param.put("typeName", "lj-user");
+        return elasticSearchService.getOrderTotalCount(param);
+    }
+
 }

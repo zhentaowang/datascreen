@@ -1,5 +1,6 @@
 package com.adatafun.datascreen.controller;
 
+import com.adatafun.datascreen.service.ElasticSearchService;
 import com.adatafun.datascreen.service.OrderServiceService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -21,10 +22,13 @@ import java.util.Map;
 public class OrderServiceController {
 
     private final OrderServiceService orderServiceService;
+    private final ElasticSearchService elasticSearchService;
 
     @Autowired
-    public OrderServiceController(OrderServiceService orderServiceService) {
+    public OrderServiceController(OrderServiceService orderServiceService,
+                                  ElasticSearchService elasticSearchService) {
         this.orderServiceService = orderServiceService;
+        this.elasticSearchService = elasticSearchService;
     }
 
     /**
@@ -43,5 +47,48 @@ public class OrderServiceController {
             e.printStackTrace();
             return JSON.toJSONString(LXResult.build(LZStatus.ERROR.value(), LZStatus.ERROR.display()));
         }
+    }
+
+    /**
+     * 两舱/要客服务使用次数 数据库中读取
+     * @param request
+     * @return  两舱/要客服务使用次数
+     */
+    public String getCategory(JSONObject request) {
+        try {
+            List<Map<String, Object>> serviceDetailList = orderServiceService.getCategory();
+            return JSON.toJSONString(new LZResult<>(serviceDetailList));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return JSON.toJSONString(LXResult.build(LZStatus.ERROR.value(), LZStatus.ERROR.display()));
+        }
+    }
+
+    /**
+     * 两舱服务使用次数 从ES中取
+     * @param request
+     * @return  两舱服务使用次数
+     */
+   public String getLoungeCount(JSONObject request) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("indexName", "lj-user");
+        param.put("typeName", "lj-user");
+        param.put("labelName", "accumulationUsageTotal");
+        param.put("aggName", "LoungeSumAgg");
+        return elasticSearchService.getCategoryCount(param);
+   }
+
+   /**
+    * 要客服务使用次数 从ES中取
+    * @param request
+    * @return  要客服务使用次数
+    */
+    public String getConciergeCount(JSONObject request) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("indexName", "lj-user");
+        param.put("typeName", "lj-user");
+        param.put("labelName", "accumulationUsageTotal");
+        param.put("aggName", "ConciergeSumAgg");
+        return elasticSearchService.getCategoryCount(param);
     }
 }

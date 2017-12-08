@@ -1,6 +1,12 @@
 package com.adatafun.datascreen.service;
 
 import com.adatafun.datascreen.mapper.OrderServiceMapper;
+import com.adatafun.datascreen.utils.ElasticSearch;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.zhiweicloud.guest.APIUtil.LXResult;
+import com.zhiweicloud.guest.APIUtil.LZResult;
+import com.zhiweicloud.guest.APIUtil.LZStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -22,5 +28,9 @@ public class OrderServiceService {
 
     public List<Map<String, Object>> getServiceDetail(Map<String, Object> param) {
         return orderServiceMapper.getServiceDetail(param);
+    }
+
+    public List<Map<String, Object>> getCategory() {
+        return orderServiceMapper.getCategory();
     }
 }

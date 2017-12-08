@@ -10,4 +10,5 @@ import java.util.Map;
  */
 public interface OrderServiceMapper {
     List<Map<String, Object>> getServiceDetail(Map<String, Object> map);
+    List<Map<String, Object>> getCategory();
 }
