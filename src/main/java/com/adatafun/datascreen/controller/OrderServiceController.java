@@ -73,7 +73,7 @@ public class OrderServiceController {
         Map<String, Object> param = new HashMap<>();
         param.put("indexName", "lj-user");
         param.put("typeName", "lj-user");
-        param.put("labelName", "accumulationUsageTotal");
+        param.put("labelName", "loungeAccumulationUsageTotal");
         param.put("aggName", "LoungeSumAgg");
         return elasticSearchService.getCategoryCount(param);
    }
@@ -87,7 +87,7 @@ public class OrderServiceController {
         Map<String, Object> param = new HashMap<>();
         param.put("indexName", "lj-user");
         param.put("typeName", "lj-user");
-        param.put("labelName", "accumulationUsageTotal");
+        param.put("labelName", "conciergeAccumulationUsageTotal");
         param.put("aggName", "ConciergeSumAgg");
         return elasticSearchService.getCategoryCount(param);
     }
