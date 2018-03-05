@@ -9,6 +9,5 @@ import java.util.Map;
  * Created by husai on 2017/11/22.
  */
 public interface OrderServiceMapper {
-    List<Map<String, Object>> getServiceDetail(Map<String, Object> map);
-    List<Map<String, Object>> getCategory();
+    List<Map<String, Object>> getServiceDetail();
 }

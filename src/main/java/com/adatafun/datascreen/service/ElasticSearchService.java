@@ -22,7 +22,7 @@ public class ElasticSearchService {
             JSONObject jsonObjectAgg = createSumAgg(param.get("labelName").toString(), param.get("aggName").toString());
 
             elasticSearch.setUp();
-            LZResult<Double> result = new LZResult<>(elasticSearch.getCount(param, jsonObjectAgg));
+            LZResult<Map<String,Object>> result = new LZResult<>(elasticSearch.getCount(param, jsonObjectAgg));
             elasticSearch.tearDown();
             return JSON.toJSONString(result);
         } catch (Exception e) {
@@ -34,7 +34,7 @@ public class ElasticSearchService {
     public String getOrderTotalCount(Map<String, Object> param) {
         try {
             elasticSearch.setUp();
-            LZResult<Double> result = new LZResult<>(elasticSearch.getOrderCount(param));
+            LZResult<Map<String,Object>> result = new LZResult<>(elasticSearch.getOrderCount(param));
             elasticSearch.tearDown();
             return JSON.toJSONString(result);
         } catch (Exception e) {

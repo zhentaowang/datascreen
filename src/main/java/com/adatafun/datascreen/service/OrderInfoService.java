@@ -21,22 +21,22 @@ public class OrderInfoService {
         this.orderInfoMapper = orderInfoMapper;
     }
 
-    public List<Map<String, Object>> getGuestArrByDate(Map<String, Object> param) {
-        return orderInfoMapper.getGuestArrByDate(param);
+    public List<Map<String, Object>> getGuestArrByDate() {
+        return orderInfoMapper.getGuestArrByDate();
 
     }
 
-    public List<Map<String, Object>> getGuestDepByDate(Map<String, Object> param) {
-        return orderInfoMapper.getGuestDepByDate(param);
+    public List<Map<String, Object>> getGuestDepByDate() {
+        return orderInfoMapper.getGuestDepByDate();
 
     }
 
-    public List<Map<String, Object>> getGuestByDate(Map<String, Object> param) {
-        return orderInfoMapper.getGuestByDate(param);
+    public List<Map<String, Object>> getGuestByDate() {
+        return orderInfoMapper.getGuestByDate();
 
     }
 
-    public List<Map<String, Object>> getSourceChanByDate(Map<String, Object> param) {
-        return orderInfoMapper.getSourceChanByDate(param);
+    public List<Map<String, Object>> getSourceChanByDate() {
+        return orderInfoMapper.getSourceChanByDate();
     }
 }

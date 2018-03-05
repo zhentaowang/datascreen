@@ -62,16 +62,42 @@
     <result column="city" jdbcType="VARCHAR" property="city" />
   </resultMap>
   <select id="getSourceChanByDate" parameterType="map" resultType="map">
-    select customer_name, count(1) AS numbers from order_info
-    where  is_important = 1 AND order_status = '已使用'
-    AND (server_complete_time between #{startDate, jdbcType=VARCHAR} and #{endDate, jdbcType=VARCHAR})
-    GROUP BY customer_name ORDER BY count(1) DESC
+
+select pro.customer_name,sum(pro.monthNums) as monthNums,sum(pro.dayNums) as dayNums, i.type from
+(
+select p.institution_client_id,c.customer_name,c.monthNums,c.dayNums from
+(
+select m.customer_name,m.protocol_id, m.monthNums, (case when d.daynums is null then 0 else d.daynums end) as dayNums from
+(
+select customer_name,protocol_id, count(1) AS monthNums from order_info
+   where  is_important = 1 AND order_status = '已使用'
+   AND (date_format(server_complete_time,'%Y-%m')=date_format(now(),'%Y-%m'))
+        GROUP BY customer_name ,protocol_id
+) m
+left join
+ (
+ select customer_name,protocol_id, count(1) AS daynums from order_info
+   where is_important = 1 AND order_status = '已使用'
+   AND (to_days(server_complete_time) = to_days(now()))
+        GROUP BY customer_name ,protocol_id
+) d
+
+on m.customer_name = d.customer_name
+ ) c
+ left join
+ protocol  p on c.protocol_id = p.protocol_id
+  ) pro
+  left join
+  institution_client i
+  on pro.institution_client_id = i.institution_client_id
+  group by pro.customer_name,i.type
+
+
   </select>
   <select id="getGuestArrByDate" parameterType="map" resultType="map">
     select ai.city, ai.name, ai.latitude, ai.longitude, a.numbers from
     (select  f.flight_arrcode, count(1) numbers  from order_info oi left join flight f on oi.flight_id = f.flight_id
     where f.flight_depcode='LJG'
-    and (f.flight_date BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
     group by  f.flight_arrcode) a
     left join airport_info ai on a.flight_arrcode = ai.airport_code
     where ai.city is not null ORDER BY a.numbers DESC
@@ -80,7 +106,6 @@
      select ai.city, ai.name, ai.latitude, ai.longitude, a.numbers from
     (select  f.flight_depcode, count(1) AS numbers  from order_info oi left join flight f on oi.flight_id = f.flight_id
     where f.flight_arrcode='LJG'
-    and (f.flight_date BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
     group by  f.flight_depcode) a
     left join airport_info ai on a.flight_depcode = ai.airport_code
     where ai.city is not null ORDER BY a.numbers DESC
@@ -91,12 +116,10 @@
     select ff.fc, sum(ff.c) numbers  from
     (select f.flight_depcode fc, count(1) c from order_info oi
     left join flight f on oi.flight_id = f.flight_id
-    where (f.flight_date BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
-    group by f.flight_depcode+f.flight_arrcode
+    group by f.flight_depcode
     union all
     select f.flight_arrcode fc, count(1) c from order_info oi
     left join flight f on oi.flight_id = f.flight_id
-    where (f.flight_date BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
     group by f.flight_arrcode)
     ff group by ff.fc
    ) fff

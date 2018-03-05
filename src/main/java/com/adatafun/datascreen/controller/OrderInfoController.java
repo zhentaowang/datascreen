@@ -9,10 +9,10 @@ import com.zhiweicloud.guest.APIUtil.LZResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.adatafun.datascreen.service.OrderInfoService;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import javax.xml.crypto.Data;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * OrderInfoController.java
@@ -23,36 +23,27 @@ import java.util.Map;
 public class OrderInfoController {
 
     private final OrderInfoService orderInfoService;
-    private final ElasticSearchService elasticSearchService;
 
     @Autowired
-    public OrderInfoController(OrderInfoService orderInfoService,
-                               ElasticSearchService elasticSearchService) {
+    public OrderInfoController(OrderInfoService orderInfoService) {
         this.orderInfoService = orderInfoService;
-        this.elasticSearchService = elasticSearchService;
     }
 //
     /**
-     * 旅客分布 - 根据 时间段 查询
-     * @param request  起始日期
-     * @return 该时间段内 旅客分布
+     * @return 旅客分布
      */
-    public String getGuestDistribution(String operation, JSONObject request) {
+    public String getGuestDistribution(JSONObject request) {
         try {
-                Map<String, Object> param = new HashMap<>();
-                param.put("startDate", request.getString("startDate"));
-                param.put("endDate", request.getString("endDate"));
-
                 List<Map<String, Object>> sourceList = new ArrayList<>();
-                switch (operation) {
-                    case "queryGuestArr":
-                        sourceList = orderInfoService.getGuestArrByDate(param);
+                switch (request.getString("type")) {
+                    case "arr":
+                        sourceList = orderInfoService.getGuestArrByDate();
                         break;
-                    case "queryGuestDep":
-                        sourceList = orderInfoService.getGuestDepByDate(param);
+                    case "dep":
+                        sourceList = orderInfoService.getGuestDepByDate();
                         break;
-                    case "queryGuest":
-                        sourceList = orderInfoService.getGuestByDate(param);
+                    case "guest":
+                        sourceList = orderInfoService.getGuestByDate();
                         break;
                     default:
                         break;
@@ -66,32 +57,31 @@ public class OrderInfoController {
 
     /**
      * 来源渠道 - 根据 时间 查询
-     * @param request  起始日期
      * @return 该时间段内 来源渠道
      */
-    public String getSourceChannel(JSONObject request) {
+    public String getSourceChannel() {
         try {
-            Map<String, Object> param = new HashMap<>();
-            param.put("startDate", request.getString("startDate"));
-            param.put("endDate", request.getString("endDate"));
-            List<Map<String, Object>> sourceList = orderInfoService.getSourceChanByDate(param);
-            return JSON.toJSONString(new LZResult<>(sourceList));
+            List<Map<String, Object>> sourceList = orderInfoService.getSourceChanByDate();
+            List<Map<String, Object>> result = getReslutList(sourceList);
+            return JSON.toJSONString(new LZResult<>(result));
         } catch (Exception e) {
             e.printStackTrace();
             return JSON.toJSONString(LXResult.build(LZStatus.ERROR.value(), LZStatus.ERROR.display()));
         }
     }
 
-    /**
-     * 用户总数 从ES中取
-     * @param request
-     * @return  用户总数
-     */
-    public String getOrderTotal(JSONObject request) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("indexName", "lj-user");
-        param.put("typeName", "lj-user");
-        return elasticSearchService.getOrderTotalCount(param);
+    public List<Map<String, Object>> getReslutList(List<Map<String, Object>> sourceList) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Map map : sourceList) {
+            Map<String, Object> param = new HashMap<>();
+            param.put("customer_name", map.get("customer_name"));
+            param.put("monthNums", map.get("monthNums"));
+            param.put("dayNums", map.get("dayNums"));
+            param.put("type", ((map.get("type").equals("航空公司"))?"航司":"协议单位"));
+            result.add(param);
+        }
+        return result;
     }
+
 
 }

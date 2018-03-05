@@ -9,9 +9,9 @@ import com.zhiweicloud.guest.APIUtil.LZResult;
 import com.zhiweicloud.guest.APIUtil.LZStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * OrderServiceController.java
@@ -33,62 +33,53 @@ public class OrderServiceController {
 
     /**
      * 休息室/贵宾厅 - 根据 时间 查询
-     * @param request  起始日期
      * @return 该时间段内 休息室/贵宾厅 使用人数
      */
-    public String getServiceDetail(JSONObject request) {
+    public String getServiceDetail() {
         try {
+            List<Map<String, Object>> serviceDetailList = orderServiceService.getServiceDetail();
+            List<Map<String, Object>> result = getResult(serviceDetailList);
+            return JSON.toJSONString(new LZResult<>(result));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return JSON.toJSONString(LXResult.build(LZStatus.ERROR.value(), LZStatus.ERROR.display()));
+        }
+    }
+
+    public List<Map<String, Object>> getResult(List<Map<String, Object>> serviceDetailList) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Map map : serviceDetailList) {
             Map<String, Object> param = new HashMap<>();
-            param.put("startDate", request.getString("startDate"));
-            param.put("endDate", request.getString("endDate"));
-            List<Map<String, Object>> serviceDetailList = orderServiceService.getServiceDetail(param);
-            return JSON.toJSONString(new LZResult<>(serviceDetailList));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return JSON.toJSONString(LXResult.build(LZStatus.ERROR.value(), LZStatus.ERROR.display()));
+            param.put("serviceDetailName", map.get("serviceDetailName"));
+            param.put("serverNum", map.get("serverNum"));
+            int isUp = Integer.parseInt(map.get("serverNum").toString()) - Integer.parseInt(map.get("yserverNum").toString());
+            param.put("isUp", ((isUp>=0)?1:0));
+            result.add(param);
         }
+        return result;
     }
 
     /**
-     * 两舱/要客服务使用次数 数据库中读取
-     * @param request
-     * @return  两舱/要客服务使用次数
+     * @return  服务人数
      */
-    public String getCategory(JSONObject request) {
-        try {
-            List<Map<String, Object>> serviceDetailList = orderServiceService.getCategory();
-            return JSON.toJSONString(new LZResult<>(serviceDetailList));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return JSON.toJSONString(LXResult.build(LZStatus.ERROR.value(), LZStatus.ERROR.display()));
+    public String getUserCount(JSONObject request) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("indexName", "lj-user");
+        param.put("typeName", "lj-user");
+        param.put("aggName", "SumAgg");
+
+        switch (request.getString("type")) {
+            case "userTotal":  //用户总数
+                return elasticSearchService.getOrderTotalCount(param);
+            case "lounge":  //两舱服务使用次数
+                param.put("labelName", "loungeAccumulationUsageTotal");
+                break;
+            case "concierge":  //要客服务使用次数
+                param.put("labelName", "conciergeAccumulationUsageTotal");
+                break;
+            default:
+                break;
         }
-    }
-
-    /**
-     * 两舱服务使用次数 从ES中取
-     * @param request
-     * @return  两舱服务使用次数
-     */
-   public String getLoungeCount(JSONObject request) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("indexName", "lj-user");
-        param.put("typeName", "lj-user");
-        param.put("labelName", "loungeAccumulationUsageTotal");
-        param.put("aggName", "LoungeSumAgg");
-        return elasticSearchService.getCategoryCount(param);
-   }
-
-   /**
-    * 要客服务使用次数 从ES中取
-    * @param request
-    * @return  要客服务使用次数
-    */
-    public String getConciergeCount(JSONObject request) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("indexName", "lj-user");
-        param.put("typeName", "lj-user");
-        param.put("labelName", "conciergeAccumulationUsageTotal");
-        param.put("aggName", "ConciergeSumAgg");
         return elasticSearchService.getCategoryCount(param);
     }
 }

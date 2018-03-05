@@ -26,11 +26,7 @@ public class OrderServiceService {
         this.orderServiceMapper = orderServiceMapper;
     }
 
-    public List<Map<String, Object>> getServiceDetail(Map<String, Object> param) {
-        return orderServiceMapper.getServiceDetail(param);
-    }
-
-    public List<Map<String, Object>> getCategory() {
-        return orderServiceMapper.getCategory();
+    public List<Map<String, Object>> getServiceDetail() {
+        return orderServiceMapper.getServiceDetail();
     }
 }

@@ -268,20 +268,24 @@ public class ElasticSearch {
 
     }
 
-    public Double getCount(Map<String, Object> param, JSONObject jsonObjectAgg) throws Exception {
+    public Map<String,Object> getCount(Map<String, Object> param, JSONObject jsonObjectAgg) throws Exception {
+        Map<String,Object> result = new HashMap<>();
         JSONObject query_json = new JSONObject();
         query_json.put("aggregations", jsonObjectAgg);
         String query = query_json.toString();
-        SearchResult result = jestService.search(jestClient, param.get("indexName").toString(), param.get("typeName").toString(), query);
-        JsonElement jsonElement = result.getJsonObject().get("aggregations").getAsJsonObject();
+        SearchResult searchResult = jestService.search(jestClient, param.get("indexName").toString(), param.get("typeName").toString(), query);
+        JsonElement jsonElement = searchResult.getJsonObject().get("aggregations").getAsJsonObject();
         JsonElement jsonElement0 = jsonElement.getAsJsonObject().get(param.get("aggName").toString());
         Double cnt = Double.parseDouble(jsonElement0.getAsJsonObject().get("value").toString());
-        return cnt;
+        result.put("numbers", cnt);
+        return result;
     }
 
-    public Double getOrderCount(Map<String, Object> param) throws Exception {
+    public Map<String,Object> getOrderCount(Map<String, Object> param) throws Exception {
+        Map<String,Object> result = new HashMap<>();
         Double cnt = jestService.count(jestClient, param.get("indexName").toString(), param.get("typeName").toString(), null);
-        return cnt;
+        result.put("numbers", cnt);
+        return result;
     }
 
     public Double count(Map<String, Object> param) throws Exception {

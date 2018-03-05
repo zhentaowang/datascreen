@@ -70,28 +70,17 @@ public class BusinessService implements IBusinessService {
             case "view":
                 success = permissionController.view(request);
                 break;
-            case "queryGuestArr":  //目的地旅客分布 出发地旅客分布 旅客分布
-            case "queryGuestDep":
-            case "queryGuest":
-                success = orderInfoController.getGuestDistribution(operation, request);
+            case "queryGuest": //旅客分布
+                success = orderInfoController.getGuestDistribution(request);
                 break;
             case "querySourceChannel": //来源渠道分布
-                success = orderInfoController.getSourceChannel(request);
+                success = orderInfoController.getSourceChannel();
                 break;
             case "queryUserTotal": //用户总数
-                success = orderInfoController.getOrderTotal(request);
+                success = orderServiceController.getUserCount(request);
                 break;
             case "queryServiceDetail": //休息室/贵宾厅使用情况
-                success = orderServiceController.getServiceDetail(request);
-                break;
-            case "queryCategory": // 两舱/要客服务使用次数
-                success = orderServiceController.getCategory(request);
-                break;
-            case "queryLounge": // 两舱服务使用次数
-                success = orderServiceController.getLoungeCount(request);
-                break;
-            case "queryConcierge": // 要客服务使用次数
-                success = orderServiceController.getConciergeCount(request);
+                success = orderServiceController.getServiceDetail();
                 break;
             case "queryLogin": //用户登录
                 success = loginController.getLoginDetail(request);

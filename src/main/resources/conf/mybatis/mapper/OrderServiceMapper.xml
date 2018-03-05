@@ -20,24 +20,32 @@
     <result column="serviceDetailName" jdbcType="VARCHAR" property="serviceDetailName" />
   </resultMap>
   <select id="getServiceDetail" parameterType="map" resultType="map">
-  SELECT os.service_detail->>'$.serviceDetailName' AS serviceDetailName,
-  sum(os.service_detail->'$.serverNum') AS serverNum FROM order_service os
-  LEFT JOIN order_info oi ON oi.order_id = os.order_id
-  WHERE (os.service_detail->>'$.serviceDetailName' is not null and os.service_detail->>'$.serviceDetailName' != '')
-  AND (os.service_detail->'$.serverNum' is not NULL and os.service_detail->'$.serverNum' != '')
-  AND  oi.order_status not like '%取消'
-  AND (oi.server_complete_time BETWEEN #{startDate, jdbcType=VARCHAR} AND #{endDate, jdbcType=VARCHAR})
-  group by os.service_detail->>'$.serviceDetailName'
-  ORDER BY sum(os.service_detail->'$.serverNum') DESC
-  </select>
-  <select id="getCategory" parameterType="map" resultType="map">
-    select sta.category as category, sum(s.sum) as nums from
-  (select  os.service_detail->>'$.serviceName' name, sum(os.service_detail->'$.serverNum') AS sum  FROM order_service os
-  WHERE (os.service_detail->>'$.serviceName' is not null and os.service_detail->>'$.serviceName' != '')
-  AND (os.service_detail->'$.serverNum' is not NULL and os.service_detail->'$.serverNum' != '')
-  group by os.service_detail->>'$.serviceName') s
-  right join service_type_allocation sta on sta.type = s.name
-  where sta.airport_code ='LJG'
-  group by sta.category ORDER BY sum(s.sum) DESC
+    select t.serviceDetailName, t.serverNum, (case when y.serverNum is null then 0 else y.serverNum end) as yserverNum from
+    (
+    SELECT os.service_detail->>'$.serviceDetailName' AS serviceDetailName,
+    sum(os.service_detail->'$.serverNum') AS serverNum FROM order_service os
+    LEFT JOIN order_info oi ON oi.order_id = os.order_id
+    WHERE (os.service_detail->>'$.serviceDetailName' is not null and os.service_detail->>'$.serviceDetailName' != '')
+    AND (os.service_detail->'$.serverNum' is not NULL and os.service_detail->'$.serverNum' != '')
+    AND  oi.order_status not like '%取消'
+    AND (to_days(oi.server_complete_time) = to_days(now()))
+    group by os.service_detail->>'$.serviceDetailName'
+    ORDER BY sum(os.service_detail->'$.serverNum') DESC
+    ) t
+    left join
+    (
+    SELECT os.service_detail->>'$.serviceDetailName' AS serviceDetailName,
+    sum(os.service_detail->'$.serverNum') AS serverNum FROM order_service os
+    LEFT JOIN order_info oi ON oi.order_id = os.order_id
+    WHERE (os.service_detail->>'$.serviceDetailName' is not null and os.service_detail->>'$.serviceDetailName' != '')
+    AND (os.service_detail->'$.serverNum' is not NULL and os.service_detail->'$.serverNum' != '')
+    AND  oi.order_status not like '%取消'
+    AND (TO_DAYS(oi.server_complete_time) - TO_DAYS( NOW( ) ) >= -1)
+    group by os.service_detail->>'$.serviceDetailName'
+    ORDER BY sum(os.service_detail->'$.serverNum') DESC
+
+    ) y
+    on
+    t.serviceDetailName = y.serviceDetailName
   </select>
 </mapper>

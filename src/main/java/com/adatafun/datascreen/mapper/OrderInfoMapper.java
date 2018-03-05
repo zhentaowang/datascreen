@@ -11,8 +11,8 @@ import java.util.Map;
  * Created by husai on 2017/11/22.
  */
 public interface OrderInfoMapper {
-    List<Map<String, Object>> getGuestArrByDate(Map<String, Object> map);
-    List<Map<String, Object>> getGuestDepByDate(Map<String, Object> map);
-    List<Map<String, Object>> getGuestByDate(Map<String, Object> map);
-    List<Map<String, Object>> getSourceChanByDate(Map<String, Object> map);
+    List<Map<String, Object>> getGuestArrByDate();
+    List<Map<String, Object>> getGuestDepByDate();
+    List<Map<String, Object>> getGuestByDate();
+    List<Map<String, Object>> getSourceChanByDate();
 }
