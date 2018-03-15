@@ -36,23 +36,42 @@ public class OrderInfoController {
         try {
                 List<Map<String, Object>> sourceList = new ArrayList<>();
                 switch (request.getString("type")) {
-                    case "arr":
+                    case "arr": //目的地旅客分布
                         sourceList = orderInfoService.getGuestArrByDate();
                         break;
-                    case "dep":
+                    case "dep": //出发地旅客分布
                         sourceList = orderInfoService.getGuestDepByDate();
                         break;
-                    case "guest":
+                    case "guest": //旅客分布
                         sourceList = orderInfoService.getGuestByDate();
                         break;
                     default:
                         break;
                 }
-                return JSON.toJSONString(new LZResult<>(sourceList));
+                List<Map<String, Object>> result = getReslut(sourceList);
+                return JSON.toJSONString(new LZResult<>(result));
         } catch (Exception e) {
             e.printStackTrace();
             return JSON.toJSONString(LXResult.build(LZStatus.ERROR.value(), LZStatus.ERROR.display()));
         }
+    }
+
+    private String replaceCity(String city) {
+        return city.replace("市", "");
+    }
+
+    public List<Map<String, Object>> getReslut(List<Map<String, Object>> sourceList) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Map map : sourceList) {
+            Map<String, Object> param = new HashMap<>();
+            param.put("city", replaceCity(map.get("city").toString()));
+            param.put("name", map.get("name"));
+            param.put("latitude", map.get("latitude"));
+            param.put("longitude", map.get("longitude"));
+            param.put("numbers", map.get("numbers"));
+            result.add(param);
+        }
+        return result;
     }
 
     /**

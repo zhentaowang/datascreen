@@ -52,7 +52,7 @@ public class OrderServiceController {
             Map<String, Object> param = new HashMap<>();
             param.put("serviceDetailName", map.get("serviceDetailName"));
             param.put("serverNum", map.get("serverNum"));
-            int isUp = Integer.parseInt(map.get("serverNum").toString()) - Integer.parseInt(map.get("yserverNum").toString());
+            Double isUp = Double.parseDouble(map.get("serverNum").toString()) - Double.parseDouble(map.get("yserverNum").toString());
             param.put("isUp", ((isUp>=0)?1:0));
             result.add(param);
         }

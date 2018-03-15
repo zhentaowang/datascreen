@@ -28,7 +28,7 @@
     WHERE (os.service_detail->>'$.serviceDetailName' is not null and os.service_detail->>'$.serviceDetailName' != '')
     AND (os.service_detail->'$.serverNum' is not NULL and os.service_detail->'$.serverNum' != '')
     AND  oi.order_status not like '%取消'
-    AND (to_days(oi.server_complete_time) = to_days(now()))
+    AND (oi.server_complete_time between date_sub(now(),interval 6 month) and now())
     group by os.service_detail->>'$.serviceDetailName'
     ORDER BY sum(os.service_detail->'$.serverNum') DESC
     ) t
@@ -40,12 +40,13 @@
     WHERE (os.service_detail->>'$.serviceDetailName' is not null and os.service_detail->>'$.serviceDetailName' != '')
     AND (os.service_detail->'$.serverNum' is not NULL and os.service_detail->'$.serverNum' != '')
     AND  oi.order_status not like '%取消'
-    AND (TO_DAYS(oi.server_complete_time) - TO_DAYS( NOW( ) ) >= -1)
+    AND (year(oi.server_complete_time)=year(date_sub(now(),interval 1 year)))
     group by os.service_detail->>'$.serviceDetailName'
     ORDER BY sum(os.service_detail->'$.serverNum') DESC
 
     ) y
     on
     t.serviceDetailName = y.serviceDetailName
+
   </select>
 </mapper>
