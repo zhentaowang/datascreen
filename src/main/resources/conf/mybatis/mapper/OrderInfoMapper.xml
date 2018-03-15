@@ -70,14 +70,14 @@ select m.customer_name,m.protocol_id, m.monthNums, (case when d.daynums is null 
 (
 select customer_name,protocol_id, count(1) AS monthNums from order_info
    where  is_important = 1 AND order_status = '已使用'
-   AND (year(server_complete_time)=year(date_sub(now(),interval 1 year)))
+   AND (date_format(server_complete_time,'%Y-%m')=date_format(now(),'%Y-%m'))
         GROUP BY customer_name ,protocol_id
 ) m
 left join
  (
  select customer_name,protocol_id, count(1) AS daynums from order_info
    where is_important = 1 AND order_status = '已使用'
-   AND (server_complete_time between date_sub(now(),interval 6 month) and now())
+   AND (to_days(server_complete_time) = to_days(now()))
         GROUP BY customer_name ,protocol_id
 ) d
 
