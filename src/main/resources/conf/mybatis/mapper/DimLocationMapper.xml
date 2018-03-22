@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.adatafun.datascreen.mapper.DimLocationMapper">
+  <resultMap id="BaseResultMap" type="com.adatafun.datascreen.model.DimLocation">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="l1" jdbcType="INTEGER" property="l1" />
+    <result column="l2" jdbcType="INTEGER" property="l2" />
+    <result column="l3" jdbcType="INTEGER" property="l3" />
+    <result column="l4" jdbcType="INTEGER" property="l4" />
+    <result column="l5" jdbcType="INTEGER" property="l5" />
+    <result column="l6" jdbcType="INTEGER" property="l6" />
+    <result column="l1_name" jdbcType="VARCHAR" property="l1Name" />
+    <result column="l2_name" jdbcType="VARCHAR" property="l2Name" />
+    <result column="l3_name" jdbcType="VARCHAR" property="l3Name" />
+    <result column="l4_name" jdbcType="VARCHAR" property="l4Name" />
+    <result column="l5_name" jdbcType="VARCHAR" property="l5Name" />
+    <result column="l6_name" jdbcType="VARCHAR" property="l6Name" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="city_level" jdbcType="VARCHAR" property="cityLevel" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, level, l1, l2, l3, l4, l5, l6, l1_name, l2_name, l3_name, l4_name, l5_name, 
+    l6_name, type, city_level
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from dim_location
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+</mapper>

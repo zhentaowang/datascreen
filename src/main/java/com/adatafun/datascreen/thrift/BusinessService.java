@@ -24,10 +24,7 @@
 
 package com.adatafun.datascreen.thrift;
 
-import com.adatafun.datascreen.controller.LoginController;
-import com.adatafun.datascreen.controller.OrderServiceController;
-import com.adatafun.datascreen.controller.PermissionController;
-import com.adatafun.datascreen.controller.OrderInfoController;
+import com.adatafun.datascreen.controller.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.wyun.thrift.server.business.IBusinessService;
@@ -50,16 +47,20 @@ public class BusinessService implements IBusinessService {
     private final OrderServiceController orderServiceController;
 //    用户登录 验证
     private final LoginController loginController;
+//    用户画像
+    private final UserPortraitController userPortraitController;
 
     @Autowired
     public BusinessService(PermissionController permissionController,
                            OrderInfoController orderInfoController,
                            OrderServiceController orderServiceController,
-                           LoginController loginController) {
+                           LoginController loginController,
+                           UserPortraitController userPortraitController) {
         this.permissionController = permissionController;
         this.orderInfoController = orderInfoController;
         this.orderServiceController = orderServiceController;
         this.loginController = loginController;
+        this.userPortraitController = userPortraitController;
     }
 
     @Override
@@ -84,6 +85,9 @@ public class BusinessService implements IBusinessService {
                 break;
             case "queryLogin": //用户登录
                 success = loginController.getLoginDetail(request);
+                break;
+            case "getUserPortraitResult":
+                success = userPortraitController.getUserPortraitResult(request);
                 break;
             default:
                 break;

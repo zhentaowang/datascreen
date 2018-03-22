@@ -327,36 +327,91 @@ public class ElasticSearch {
         return jestService.delete(jestClient, param.get("indexName").toString());
     }
 
-    public List<Map> getUserPortrait(Map<String, Object> param, JSONObject bool_json, JSONObject rangeAgg) throws Exception {
+    private String replaceProvince(String province) {
+//        return province.replace("省","").replace("市","");
+        if (province.equals("黑龙江省") || province.equals("内蒙古")) {
+            return province.substring(0, 3);
+        } else {
+            return province.substring(0, 2);
+        }
+    }
 
+    private List<Map> transferDataForm (List<Map> result, String aggs) {
+        List<Map> newResult = new ArrayList<>();
+        for (int i = 0; i < result.size(); i++) {
+            Map<String, Object> mapResult = new HashMap<>();
+            String name = result.get(i).get("key").toString();
+            // -1 改为 未知
+            if (name.equals("-1")) name = "未知";
+            // province 过滤掉 省 市 自治区等(配合前端)
+            if(aggs.equals("province")) {
+                name = replaceProvince(name);
+            }
+            mapResult.put("name", name);
+            mapResult.put("id", i);
+            mapResult.put("value", result.get(i).get("doc_count"));
+            newResult.add(mapResult);
+        }
+        return newResult;
+    }
+
+    public JSONObject getUserPortrait(Map<String, Object> param, JSONObject bool_json, JSONObject agg) throws Exception {
         JSONObject query_json = new JSONObject();
         query_json.put("query", bool_json);
-
-//        query_json.put("aggregations", createTermsAgg());
-//        query_json.put("aggregations", rangeAgg);
-        query_json.put("aggs", rangeAgg);
-
-
-        String query0 = query_json.toJSONString();
-        SearchResult result = jestService.search(jestClient, param.get("indexName").toString(), param.get("typeName").toString(), query0);
-        JsonElement jsonElement = result.getJsonObject().get("aggregations").getAsJsonObject();
+        query_json.put("aggregations", agg);
+        String query = query_json.toJSONString();
+        SearchResult searchResult = jestService.search(jestClient, param.get("indexName").toString(), param.get("typeName").toString(), query);
+        JsonElement jsonElement = searchResult.getJsonObject().get("aggregations").getAsJsonObject();
         JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-//        JsonElement jsonElement0 = jsonObject.get(param.get("aggName").toString());
-
-        JsonElement jsonElement0 = jsonObject.get("ageRangeAgg");
-        JsonObject jsonObject0 = jsonElement0.getAsJsonObject();
-        JsonElement jsonElement1 = jsonObject0.get("buckets");
-        String vdfd = jsonElement1.toString();
-        List<Map> list = JSON.parseArray(vdfd, Map.class);
-//        List<SearchResult.Hit<User, Void>> hits = result.getHits(User.class);
-//        List<User> userList = new ArrayList<>();
-//        for (SearchResult.Hit<User, Void> hit : hits) {
-//            userList.add(hit.source);
-//        }
-        return list;
-
+        JSONObject user = new JSONObject();
+        JSONObject result = new JSONObject();
+        List<String> aggsList = JSONArray.parseArray(JSONObject.toJSONString(param.get("aggsList")), String.class);
+        for (String aggs : aggsList) {
+            JsonElement jsonElement0 = jsonObject.get(aggs+"RangeAgg");
+            if (jsonElement0 == null) {
+                continue;
+            }
+            String ret = jsonElement0.getAsJsonObject().get("buckets").toString();
+            List<Map> list = JSON.parseArray(ret, Map.class);
+            List<Map> sexResult = transferDataForm(list, aggs);
+            user.put(aggs, sexResult);
+        }
+        user.put("total", searchResult.getTotal());
+        result.put("user", user);
+        return result;
     }
+
+//    public List<Map> getUserPortrait(Map<String, Object> param, JSONObject bool_json, JSONObject rangeAgg) throws Exception {
+//
+//        JSONObject query_json = new JSONObject();
+//        query_json.put("query", bool_json);
+//
+////        query_json.put("aggregations", createTermsAgg());
+////        query_json.put("aggregations", rangeAgg);
+//        query_json.put("aggs", rangeAgg);
+//
+//
+//        String query0 = query_json.toJSONString();
+//        SearchResult result = jestService.search(jestClient, param.get("indexName").toString(), param.get("typeName").toString(), query0);
+//        JsonElement jsonElement = result.getJsonObject().get("aggregations").getAsJsonObject();
+//        JsonObject jsonObject = jsonElement.getAsJsonObject();
+//
+////        JsonElement jsonElement0 = jsonObject.get(param.get("aggName").toString());
+//
+//        JsonElement jsonElement0 = jsonObject.get("ageRangeAgg");
+//        JsonObject jsonObject0 = jsonElement0.getAsJsonObject();
+//        JsonElement jsonElement1 = jsonObject0.get("buckets");
+//        String vdfd = jsonElement1.toString();
+//        List<Map> list = JSON.parseArray(vdfd, Map.class);
+////        List<SearchResult.Hit<User, Void>> hits = result.getHits(User.class);
+////        List<User> userList = new ArrayList<>();
+////        for (SearchResult.Hit<User, Void> hit : hits) {
+////            userList.add(hit.source);
+////        }
+//        return list;
+//
+//    }
 
     public List<Map> getUserPortraitTest(Map<String, Object> param, List<Long> ages) throws Exception {
 
